@@ -53,6 +53,7 @@ const config: Config = {
     "src/providers/rabbitmq/rabbitmq.config.ts",
     "src/providers/rabbitmq/providers/production-status-queue.provider.ts",
     "src/providers/rabbitmq/strategy/handleMessageStrategy.service.ts",
+    "src/providers/rabbitmq/saga/saga.types.ts",
     "src/common/utils/",
     ".*\\.spec\\.ts$",
     ".*\\.test\\.ts$",

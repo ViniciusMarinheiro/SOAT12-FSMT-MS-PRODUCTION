@@ -2,6 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { ProductionController } from "../infrastructure/web/production.controller";
 import { UpdateProductionStatusUseCase } from "../application/use-cases/update-production-status.use-case";
 import { GetProductionQueueUseCase } from "../application/use-cases/get-production-queue.use-case";
+import { ProductionStatusEnum } from "../domain/enums/production-status.enum";
 
 describe("ProductionController", () => {
   let controller: ProductionController;
@@ -46,5 +47,17 @@ describe("ProductionController", () => {
 
     expect(getQueueUseCase.execute).toHaveBeenCalled();
     expect(result).toEqual(queueStatus);
+  });
+
+  it("updateStatus should call updateProductionStatusUseCase.execute", async () => {
+    const workOrderId = "10";
+    const status = ProductionStatusEnum.IN_DIAGNOSIS;
+    const updated = { id: 10, status } as any;
+    updateStatusUseCase.execute.mockResolvedValue(updated);
+
+    const result = await controller.updateStatus(workOrderId, { status });
+
+    expect(updateStatusUseCase.execute).toHaveBeenCalledWith(10, status);
+    expect(result).toEqual(updated);
   });
 });
