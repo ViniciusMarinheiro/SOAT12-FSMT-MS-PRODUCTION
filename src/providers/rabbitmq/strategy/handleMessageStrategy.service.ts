@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { MessageHandler } from "../types/message.interface";
 import { ReceiveWorkOrderStrategy } from "./receiveWorkOrderStrategy.service";
+import { SagaCompensateProductionStrategy } from "./sagaCompensateProductionStrategy.service";
 import { rabbitMQConfig } from "../rabbitmq.config";
 
 @Injectable()
@@ -9,9 +10,13 @@ export class HandleMessageStrategyFactory {
 
   private strategyMap: Record<string, MessageHandler> = {};
 
-  constructor(private receiveWorkOrderStrategy: ReceiveWorkOrderStrategy) {
+  constructor(
+    private receiveWorkOrderStrategy: ReceiveWorkOrderStrategy,
+    private sagaCompensateProductionStrategy: SagaCompensateProductionStrategy,
+  ) {
     this.strategyMap = {
       receiveWorkOrder: this.receiveWorkOrderStrategy,
+      sagaCompensateProduction: this.sagaCompensateProductionStrategy,
     };
 
     Object.values(rabbitMQConfig).forEach((config) => {

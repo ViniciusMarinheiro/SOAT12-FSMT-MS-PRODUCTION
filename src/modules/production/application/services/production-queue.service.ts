@@ -63,6 +63,20 @@ export class ProductionQueueService {
     });
   }
 
+  async getItemByWorkOrderId(
+    workOrderId: number,
+  ): Promise<ProductionQueueItem | null> {
+    return this.repo.findOne({ where: { workOrderId } });
+  }
+
+  async removeFromQueueByWorkOrderId(workOrderId: number): Promise<boolean> {
+    const result = await this.repo.delete({ workOrderId });
+    this.logger.log(
+      `OS ${workOrderId} removida da fila de produção (compensação saga)`,
+    );
+    return (result.affected ?? 0) > 0;
+  }
+
   async updateItemStatus(
     workOrderId: number,
     status: ProductionStatusEnum,

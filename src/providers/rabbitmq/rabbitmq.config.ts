@@ -24,7 +24,6 @@ export const rabbitMQConfig: Record<string, RabbitMQConfig> = {
     strategyKey: "receiveWorkOrder",
     isConsumer: true,
   },
-  // Fila para enviar atualizações de status para MS-ORDER (só publica, não consome)
   sendStatusUpdate: {
     exchange: "production.v1",
     queue: "production.v1.status-update",
@@ -34,13 +33,21 @@ export const rabbitMQConfig: Record<string, RabbitMQConfig> = {
     strategyKey: "sendStatusUpdate",
     isConsumer: false,
   },
+  sagaCompensateProduction: {
+    exchange: "saga.v1",
+    queue: "saga.v1.compensate.production",
+    routingKey: "compensate",
+    deadLetterExchange: "saga.v1.dlq",
+    deadLetterRoutingKey: "compensate.production.dlq",
+    strategyKey: "sagaCompensateProduction",
+    isConsumer: true,
+  },
 };
 
 export const getRabbitMQConfigs = (): RabbitMQConfig[] => {
   return Object.values(rabbitMQConfig);
 };
 
-/** Retorna apenas configs em que este serviço é consumer (para connectMicroservices). */
 export const getConsumerConfigs = (): RabbitMQConfig[] => {
   return getRabbitMQConfigs().filter((c) => c.isConsumer !== false);
 };
