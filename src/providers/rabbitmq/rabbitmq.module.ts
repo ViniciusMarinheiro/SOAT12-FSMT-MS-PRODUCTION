@@ -5,9 +5,9 @@ import { RabbitMQService } from "./rabbitmq.service";
 import { RabbitMQSetupService } from "./rabbitmq.setup.service";
 import { HandleMessageStrategyFactory } from "./strategy/handleMessageStrategy.service";
 import { ReceiveWorkOrderStrategy } from "./strategy/receiveWorkOrderStrategy.service";
+import { SagaCompensateProductionStrategy } from "./strategy/sagaCompensateProductionStrategy.service";
 import { getRabbitMQConfigs } from "./rabbitmq.config";
 import { ProductionStatusQueueProvider } from "./providers/production-status-queue.provider";
-import { ProductionQueueService } from "@/modules/production/application/services/production-queue.service";
 import { ProductionModule } from "@/modules/production/production.module";
 
 @Module({
@@ -23,6 +23,7 @@ import { ProductionModule } from "@/modules/production/production.module";
     RabbitMQService,
     RabbitMQSetupService,
     ReceiveWorkOrderStrategy,
+    SagaCompensateProductionStrategy,
     HandleMessageStrategyFactory,
     ProductionStatusQueueProvider,
   ],

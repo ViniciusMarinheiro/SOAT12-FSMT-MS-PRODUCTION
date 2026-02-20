@@ -9,20 +9,20 @@ import { CustomLogger } from "./common/log/custom.logger";
 import { EnvConfigModule } from "./common/service/env/env-config.module";
 import { DatabaseModule } from "./common/service/database/database.module";
 import { LoggerModule as PinoLoggerModule } from "nestjs-pino";
-// import * as newrelic from "newrelic";
+import * as newrelic from "newrelic";
 import { RabbitMQModule } from "./providers/rabbitmq/rabbitmq.module";
 import { AuthModule } from "./modules/auth/auth.module";
 
 const isTest = process.env.NODE_ENV === "test";
 const isDevelopment = process.env.NODE_ENV !== "production" && !isTest;
 
-// const getNewRelicMetadata = () => {
-//   try {
-//     return newrelic.getLinkingMetadata();
-//   } catch (error) {
-//     return {};
-//   }
-// };
+const getNewRelicMetadata = () => {
+  try {
+    return newrelic.getLinkingMetadata();
+  } catch (error) {
+    return {};
+  }
+};
 
 @Module({
   imports: [
@@ -35,7 +35,7 @@ const isDevelopment = process.env.NODE_ENV !== "production" && !isTest;
       pinoHttp: {
         level: "trace",
         mixin: () => {
-          return {}; // getNewRelicMetadata();
+          return getNewRelicMetadata();
         },
         serializers: {
           req: (req) => ({
