@@ -1,40 +1,44 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: payment-service
+  name: production-service
   labels:
-    app: payment-service
+    app: production-service
 spec:
-  replicas: 1 
+  replicas: 1
   selector:
     matchLabels:
-      app: payment-service
+      app: production-service
   template:
     metadata:
       labels:
-        app: payment-service
+        app: production-service
     spec:
       containers:
-        - name: payment-service
-          image: soat12acr.azurecr.io/oficina-payment:latest 
+        - name: production-service
+          image: soat12acr.azurecr.io/oficina-production:latest 
           ports:
             - containerPort: 3001
           env:
-            # 🟢 Variável do New Relic adicionada aqui
+            # ------------------------------------------------
+            # 0. OBSERVABILIDADE (NEW RELIC)
+            # ------------------------------------------------
             - name: NEW_RELIC_APP_NAME
-              value: "12_soat_payment"
+              value: "12_soat_production"
 
-            # 1. Configurações da Aplicação
+            # ------------------------------------------------
+            # 1. CONFIGURAÇÕES BASE
+            # ------------------------------------------------
             - name: NODE_ENV
               value: "production"
             - name: PORT
               value: "3001"
             - name: DOCUMENTATION_PREFIX
-              value: "api/v1/payments"
+              value: "api/v1/production"
 
-            # 2. Banco de Dados na Azure
-            - name: DATABASE_URL
-              value: "postgresql://postgres:vD3WTW0gGmahJdjCfXHG@soat12-postgres-fsmt.postgres.database.azure.com:5432/payment_db"
+            # ------------------------------------------------
+            # 2. BANCO DE DADOS POSTGRESQL NA AZURE
+            # ------------------------------------------------
             - name: DB_HOST
               value: "soat12-postgres-fsmt.postgres.database.azure.com"
             - name: DB_PORT
@@ -44,7 +48,7 @@ spec:
             - name: DB_PASSWORD
               value: "vD3WTW0gGmahJdjCfXHG"
             - name: DB_DATABASE
-              value: "payment_db"
+              value: "production_db"
             - name: DB_SCHEMA
               value: "public"
             - name: PGSSLMODE
@@ -52,7 +56,9 @@ spec:
             - name: DB_SSL
               value: "true"
 
-            # 3. Mensageria RabbitMQ
+            # ------------------------------------------------
+            # 3. MENSAGERIA E REDIS
+            # ------------------------------------------------
             - name: RABBITMQ_URL
               value: "amqp://guest:guest@rabbitmq-service:5672"
             - name: RABBITMQ_CONSUMER_MAX_RETRIES
@@ -61,9 +67,43 @@ spec:
               value: "1000"
             - name: DLQ_REPUBLISH_TO_MAIN
               value: "false"
+            - name: REDIS_HOST
+              value: "redis-service"
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_DB
+              value: "0"
+            - name: REDIS_PASSWORD
+              value: ""
 
-            # 4. Segurança e Integrações (Mercado Pago)
+            # ------------------------------------------------
+            # 4. SEGURANÇA E JWT
+            # ------------------------------------------------
             - name: JWT_SECRET
               value: "508e703c81a194c84a9895bd04362f504b33d8366a2f371cc0d346074fa6e7697c8f2e9d2df38ac8edb86f4935a45037053f16821d1667d6c3d8afaf082f366f"
-            - name: MERCADOPAGO_ACCESS_TOKEN
-              value: "TEST-4156346917851798-021713-5f683be5afff845e9af4be1b139cd88e-203445"
+            - name: JWT_EXPIRES_IN
+              value: "7d"
+            - name: LAMBDA_JWT_SECRET
+              value: "dummy-secret"
+
+            # ------------------------------------------------
+            # 5. EMAILS E INTEGRAÇÕES
+            # ------------------------------------------------
+            - name: SMTP_HOST
+              value: "smtp.gmail.com"
+            - name: PORT_EMAIL
+              value: "465"
+            - name: SECURE_EMAIL
+              value: "true"
+            - name: USER_EMAIL
+              value: "junioryrj@gmail.com"
+            - name: BBC_EMAIL
+              value: "rodrigo.franco@unifio.edu.br"
+            - name: PASS_EMAIL
+              value: "oyjn prnc rfcy zfqz"
+            - name: SERVER_URL
+              value: "http://localhost:3001"
+            - name: LAMBDA_FUNCTION_URL
+              value: "http://dummy-lambda-url"
+            - name: API_BASE_URL
+              value: "http://localhost:3333/api/v1/oficina"
