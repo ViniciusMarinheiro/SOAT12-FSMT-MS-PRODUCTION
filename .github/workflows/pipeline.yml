@@ -1,18 +1,18 @@
-﻿name: CI/CD Pipeline - oficina-production
+name: CI/CD Pipeline - oficina-production
 
 on:
   push:
-    branches: ['master', 'main']
+    branches: ["master", "main"]
   pull_request:
-    branches: ['master', 'main']
+    branches: ["master", "main"]
 
 env:
-  NODE_VERSION: '22'
+  NODE_VERSION: "22"
   ACR_NAME: soat12acr
   IMAGE_NAME: oficina-production
   RESOURCE_GROUP: SOAT12-FSMT-RG
   CLUSTER_NAME: SOAT12-FSMT-AKS
-  NEW_RELIC_LICENSE_KEY: '0b03617db38d9d22049c348c7def8658FFFFNRAL'
+  NEW_RELIC_LICENSE_KEY: "0b03617db38d9d22049c348c7def8658FFFFNRAL"
 
 jobs:
   validate:
@@ -23,8 +23,21 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
+          cache: "yarn"
       - run: yarn install --frozen-lockfile || npm install
+
+  lint:
+    name: 📐 Lint
+    runs-on: ubuntu-latest
+    needs: validate
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "yarn"
+      - run: yarn install --frozen-lockfile || npm install
+      - run: yarn lint || npm run lint --if-present
 
   unit-tests:
     name: 🧪 Testes
@@ -35,7 +48,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
+          cache: "yarn"
       - run: yarn install --frozen-lockfile || npm install
       - run: yarn test:cov || npm run test:cov --if-present
 
@@ -48,13 +61,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'yarn'
+          cache: "yarn"
       - run: yarn audit || npm audit --audit-level=high || true
 
   build-and-deploy:
     name: 🏗️ Build e Deploy AKS
     runs-on: ubuntu-latest
-    needs: [unit-tests, security]
+    needs: [unit-tests, security, lint]
     if: github.event_name == 'push'
     steps:
       - uses: actions/checkout@v4
@@ -73,7 +86,7 @@ jobs:
       - name: Setup Kubelogin
         uses: azure/use-kubelogin@v1
         with:
-          kubelogin-version: 'latest'
+          kubelogin-version: "latest"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -82,12 +95,12 @@ jobs:
         with:
           resource-group: ${{ env.RESOURCE_GROUP }}
           cluster-name: ${{ env.CLUSTER_NAME }}
-          use-kubelogin: 'true'
+          use-kubelogin: "true"
 
       - name: Install Helm
         uses: azure/setup-helm@v3
         with:
-          version: 'latest'
+          version: "latest"
 
       - name: Install New Relic Operator
         run: |
