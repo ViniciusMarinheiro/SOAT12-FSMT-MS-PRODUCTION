@@ -1,9 +1,7 @@
-import { Controller, Get, Patch, Param, Body, Post } from "@nestjs/common";
+import { Controller, Get, Patch, Param, Body } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { UpdateProductionStatusUseCase } from "../../application/use-cases/update-production-status.use-case";
 import { GetProductionQueueUseCase } from "../../application/use-cases/get-production-queue.use-case";
-import { FinishProductionUseCase } from "../../application/use-cases/finish-production.use-case";
-import { ProductionQueueService } from "../../application/services/production-queue.service";
 import { UpdateProductionStatusDto } from "./dto/update-production-status.dto";
 
 @ApiTags("production")
