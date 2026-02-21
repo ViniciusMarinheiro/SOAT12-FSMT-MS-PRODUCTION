@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: production-service
 spec:
-  type: ClusterIP
+  type: LoadBalancer # 👈 Mudou aqui também
   selector:
     app: production-service
   ports:
