@@ -16,16 +16,29 @@ spec:
     spec:
       containers:
         - name: production-service
-          image: soat12acr.azurecr.io/oficina-production:latest 
+          image: soat12acr.azurecr.io/oficina-production:latest
           ports:
             - containerPort: 3001
           env:
             # ------------------------------------------------
             # 0. OBSERVABILIDADE (NEW RELIC)
             # ------------------------------------------------
+            - name: NEW_RELIC_LICENSE_KEY
+              value: 0b03617db38d9d22049c348c7def8658FFFFNRAL
+            - name: NEW_RELIC_NO_CONFIG_FILE
+              value: "true"
+            - name: NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+              value: "true"
+            - name: NEW_RELIC_LOG
+              value: stdout
+            - name: NEW_RELIC_AI_MONITORING_ENABLED
+              value: "true"
+            - name: NEW_RELIC_CUSTOM_INSIGHTS_EVENTS_MAX_SAMPLES_STORED
+              value: 100k
+            - name: NEW_RELIC_SPAN_EVENTS_MAX_SAMPLES_STORED
+              value: 10k
             - name: NEW_RELIC_APP_NAME
-              value: "12_soat_production"
-
+              value: 12_soat_production
             # ------------------------------------------------
             # 1. CONFIGURAÇÕES BASE
             # ------------------------------------------------
@@ -50,7 +63,7 @@ spec:
             - name: DB_DATABASE
               value: "production_db"
             - name: DB_SCHEMA
-              value: "public"
+              value: "production"
             - name: PGSSLMODE
               value: "require"
             - name: DB_SSL
